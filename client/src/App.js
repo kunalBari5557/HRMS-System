@@ -12,32 +12,40 @@ import { ThemeProvider } from "./helper/ThemeProvider";
 
 const App = () => {
   const { auth } = useSelector((state) => state);
-  console.log("authData", auth.token);
+  console.log("auth",auth);
+  
 
   return (
     <ThemeProvider>
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={auth.token ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/signup" element={<Signup />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route 
+            path="/" 
+            element={auth.token ? <Navigate to="/dashboard" replace /> : <Login />} 
+          />
+          <Route 
+            path="/signup" 
+            element={auth.token ? <Navigate to="/dashboard" replace /> : <Signup />} 
+          />
 
-        {/* Protected Routes with Layout wrapping all authenticated pages */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          {/* Protected Routes with Layout wrapping all authenticated pages */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };
 
 export default App;
+
