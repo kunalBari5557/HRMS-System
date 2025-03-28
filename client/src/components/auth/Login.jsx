@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../Redux/features/authSlice";
+import { login } from "../../Redux/features/auth/authSlice";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });

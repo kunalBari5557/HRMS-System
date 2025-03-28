@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../Redux/features/authSlice";
+import { logout } from "../../Redux/features/auth/authSlice";
 import { useTheme } from "../../helper/ThemeProvider";
 import ThemeSelector from "../../helper/ThemeSelector";
 
