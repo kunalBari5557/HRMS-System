@@ -1,13 +1,6 @@
 // features/attendance/attendanceSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
-});
+import api from '../../../utils/api';
 
 export const fetchStatus = createAsyncThunk(
   'attendance/fetchStatus',

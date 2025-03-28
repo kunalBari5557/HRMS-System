@@ -1,6 +1,10 @@
 const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 
+function calculateHours(start, end) {
+  return (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
+}
+
 // Clock In/Out
 exports.clockInOut = async (req, res) => {
   try {
@@ -95,6 +99,3 @@ exports.getStatus = async (req, res) => {
   }
 };
 
-function calculateHours(start, end) {
-  return (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
-}
