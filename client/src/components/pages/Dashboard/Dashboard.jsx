@@ -20,7 +20,6 @@ function Dashboard() {
     status,
     error,
     hasClockedInToday,
-    breakCount,
   } = useSelector((state) => state.attendance);
 
   // Fetch initial status
@@ -51,13 +50,9 @@ function Dashboard() {
     dispatch(clockInOut());
   };
 
-  const handleBreak = async () => {
+  const handleBreak = () => {
     if (!isClockedIn) {
       toast.error("You must clock in first");
-      return;
-    }
-    if (!isOnBreak && breakCount >= 3) {
-      toast.error("Maximum 3 breaks allowed per day");
       return;
     }
     dispatch(toggleBreak());
@@ -84,27 +79,25 @@ function Dashboard() {
             <p className="text-2xl font-mono text-gray-800">{currentTime}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500 mb-1">Work Time</p>
-              <p className="text-2xl font-mono text-gray-800">{workTime}</p>
-            </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500 mb-1">Break Time ({breakCount}/3)</p>
-              <p className="text-2xl font-mono text-gray-800">{breakTime}</p>
-            </div>
+          <div className="bg-gray-50 p-4 rounded-lg mb-3">
+            <p className="text-sm text-gray-500 mb-1">
+              {isOnBreak ? "Break Time" : "Work Time"}
+            </p>
+            <p className="text-2xl font-mono text-gray-800">
+              {isOnBreak ? breakTime : workTime}
+            </p>
           </div>
 
           <div className="flex space-x-3">
             <button
               onClick={handleBreak}
-              disabled={!isClockedIn || status === "loading" || (breakCount >= 3 && !isOnBreak)}
+              disabled={!isClockedIn || status === "loading"}
               className={`flex-1 py-2 px-4 rounded-lg transition ${
                 isOnBreak
                   ? "bg-green-600 hover:bg-green-700 text-white"
                   : "bg-blue-600 hover:bg-blue-700 text-white"
               } ${
-                !isClockedIn || status === "loading" || (breakCount >= 3 && !isOnBreak)
+                !isClockedIn || status === "loading"
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}

@@ -9,5 +9,6 @@ router.use(auth);
 router.post('/clock', attendanceController.clockInOut);
 router.post('/break', attendanceController.breakInOut);
 router.get('/status', attendanceController.getStatus);
+router.get('/list', attendanceController.getAttendanceList);
 
 module.exports = router;
