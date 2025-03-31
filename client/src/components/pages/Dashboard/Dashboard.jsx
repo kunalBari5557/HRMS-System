@@ -9,6 +9,7 @@ import {
   resetError,
   fetchAttendanceList,
 } from "../../../Redux/features/attendance/attendanceSlice";
+import { calculateWorkTime } from "../../../utils/timeUtils";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -26,10 +27,6 @@ function Dashboard() {
   const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
   const todayRecord = attendanceList.find((item) => item.date === today);
 
-  console.log("isClockedIn", isClockedIn);
-  console.log("isOnBreak", isOnBreak);
-  console.log("todayRecord", todayRecord); // This will return only today's attendance record or undefined if not found.
-
   // Fetch initial status and set up timer
   useEffect(() => {
     dispatch(fetchStatus());
@@ -44,7 +41,7 @@ function Dashboard() {
 
   useEffect(() => {
     dispatch(fetchAttendanceList());
-  }, [dispatch]);
+  }, [dispatch, isClockedIn, isOnBreak]);
 
   // Show error toast when error occurs
   useEffect(() => {
@@ -111,7 +108,12 @@ function Dashboard() {
               <p className="text-2xl font-mono text-gray-800">
                 {isClockedIn
                   ? workTime ?? "00:00:00"
-                  : todayRecord?.totalHours ?? "00:00:00"}
+                  : todayRecord
+                  ? calculateWorkTime(
+                      todayRecord.totalHours,
+                      todayRecord.breakHours
+                    )
+                  : "00:00:00"}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">

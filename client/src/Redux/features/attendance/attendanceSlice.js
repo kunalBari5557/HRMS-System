@@ -154,7 +154,6 @@ const attendanceSlice = createSlice({
         state.error = null;
 
         if (action.payload.isClockedIn) {
-          // Clocking in - reset all timers
           const now = new Date().toISOString();
           state.clockInTime = now;
           state.workTime = "00:00:00";
@@ -170,7 +169,6 @@ const attendanceSlice = createSlice({
           localStorage.setItem("totalBreakDuration", "0");
           localStorage.setItem("lastBreakTime", "00:00:00");
         } else {
-          // Clocking out - save final times
           localStorage.setItem("workTime", state.workTime);
           localStorage.setItem("breakTime", state.breakTime);
           localStorage.setItem("lastClockOutDate", new Date().toDateString());
@@ -178,12 +176,14 @@ const attendanceSlice = createSlice({
           state.clockInTime = null;
           state.breakStartTime = null;
         }
-        
-        // Update all localStorage values
+
         localStorage.setItem("isClockedIn", state.isClockedIn);
         localStorage.setItem("isOnBreak", state.isOnBreak);
         localStorage.setItem("hasClockedInToday", state.hasClockedInToday);
         localStorage.setItem("breakCount", state.breakCount);
+
+        // ✅ Dispatch fetchAttendanceList to update attendance state after clock-in/out
+        state.attendanceList = action.payload.attendanceList || state.attendanceList;
       })
       .addCase(clockInOut.rejected, (state, action) => {
         state.status = "failed";
@@ -199,26 +199,19 @@ const attendanceSlice = createSlice({
         const now = new Date();
 
         if (action.payload.isOnBreak) {
-          // Start break
           state.isOnBreak = true;
           state.breakStartTime = now.toISOString();
           localStorage.setItem("breakStartTime", state.breakStartTime);
         } else {
-          // End break
           if (state.breakStartTime) {
             const breakStart = new Date(state.breakStartTime);
             const breakDuration = Math.floor((now - breakStart) / 1000);
-
-            // Ensure only the actual break duration is added
             state.totalBreakDuration += breakDuration;
             localStorage.setItem("totalBreakDuration", state.totalBreakDuration);
-
-            // Store actual break time
             state.breakTime = secondsToTimeString(state.totalBreakDuration);
             localStorage.setItem("breakTime", state.breakTime);
           }
 
-          // Reset break-related states
           state.isOnBreak = false;
           state.breakStartTime = null;
           state.breakCount = action.payload.breakCount;
@@ -230,6 +223,9 @@ const attendanceSlice = createSlice({
         localStorage.setItem("hasClockedInToday", state.hasClockedInToday);
         localStorage.setItem("breakCount", state.breakCount);
         state.error = null;
+
+        // ✅ Dispatch fetchAttendanceList to update attendance state after break in/out
+        state.attendanceList = action.payload.attendanceList || state.attendanceList;
       })
       .addCase(toggleBreak.rejected, (state, action) => {
         state.status = "failed";
