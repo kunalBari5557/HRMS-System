@@ -31,6 +31,13 @@ function Dashboard() {
       dispatch(updateCurrentTime());
     }, 1000);
 
+    // Clear localStorage if it's a new day
+    const lastClockOutDate = localStorage.getItem("lastClockOutDate");
+    const today = new Date().toDateString();
+    if (lastClockOutDate !== today) {
+      localStorage.removeItem("workTime");
+    }
+
     return () => clearInterval(timer);
   }, [dispatch]);
 
@@ -47,7 +54,12 @@ function Dashboard() {
       toast.error("You have already clocked in today");
       return;
     }
-    dispatch(clockInOut());
+    const resultAction = await dispatch(clockInOut());
+    if (clockInOut.fulfilled.match(resultAction)) {
+      if (!resultAction.payload.isClockedIn) {
+        localStorage.setItem("lastClockOutDate", new Date().toDateString());
+      }
+    }
   };
 
   const handleBreak = () => {
