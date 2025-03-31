@@ -50,7 +50,7 @@ const AttendanceChart = () => {
   });
 
   return (
-    <div className="p-7 bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl">
+    <div className="p-5 bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl">
       {/* 🟢 Updated Header with Dynamic Month-Year */}
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
         🕒 My Time Logs - {monthYear}

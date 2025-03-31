@@ -21,7 +21,6 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
     const response = await axios.post(`${API_URL}/login`, userData);
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user)); // ✅ Save user data
-    console.log('response', response);
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -42,6 +41,7 @@ const authSlice = createSlice({
       state.token = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user'); // ✅ Remove user from storage
+      localStorage.clear();
     },
   },
   extraReducers: (builder) => {
@@ -67,8 +67,6 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log('state', state);
-        console.log('action', action);
         state.loading = false;
         state.token = action.payload.token;
         state.user = action.payload.user; // ✅ Update user state
