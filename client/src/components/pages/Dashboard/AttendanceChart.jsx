@@ -16,6 +16,13 @@ const AttendanceChart = () => {
   const { attendanceList } = useSelector((state) => state.attendance);
   const [activeBar, setActiveBar] = useState(null); // Track hovered bar
 
+  // Get current month & year
+  const currentDate = new Date();
+  const monthYear = currentDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  }); // Example: "March 2025"
+
   useEffect(() => {
     dispatch(fetchAttendanceList());
   }, [dispatch]);
@@ -44,9 +51,11 @@ const AttendanceChart = () => {
 
   return (
     <div className="p-7 bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl">
+      {/* 🟢 Updated Header with Dynamic Month-Year */}
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        🕒 My Time Logs - Attendance
+        🕒 My Time Logs - {monthYear}
       </h2>
+
       <ResponsiveContainer width="100%" height={350}>
         <BarChart
           data={chartData}
