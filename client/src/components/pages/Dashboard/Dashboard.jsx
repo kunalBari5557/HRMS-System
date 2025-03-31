@@ -22,7 +22,7 @@ function Dashboard() {
     hasClockedInToday,
   } = useSelector((state) => state.attendance);
 
-  // Fetch initial status
+  // Fetch initial status and set up timer
   useEffect(() => {
     dispatch(fetchStatus());
 
@@ -30,13 +30,6 @@ function Dashboard() {
     const timer = setInterval(() => {
       dispatch(updateCurrentTime());
     }, 1000);
-
-    // Clear localStorage if it's a new day
-    const lastClockOutDate = localStorage.getItem("lastClockOutDate");
-    const today = new Date().toDateString();
-    if (lastClockOutDate !== today) {
-      localStorage.removeItem("workTime");
-    }
 
     return () => clearInterval(timer);
   }, [dispatch]);
@@ -57,17 +50,26 @@ function Dashboard() {
     const resultAction = await dispatch(clockInOut());
     if (clockInOut.fulfilled.match(resultAction)) {
       if (!resultAction.payload.isClockedIn) {
-        localStorage.setItem("lastClockOutDate", new Date().toDateString());
+        toast.success("Clocked out successfully");
+      } else {
+        toast.success("Clocked in successfully");
       }
     }
   };
 
-  const handleBreak = () => {
+  const handleBreak = async () => {
     if (!isClockedIn) {
       toast.error("You must clock in first");
       return;
     }
-    dispatch(toggleBreak());
+    const resultAction = await dispatch(toggleBreak());
+    if (toggleBreak.fulfilled.match(resultAction)) {
+      if (resultAction.payload.isOnBreak) {
+        toast.success("Break started");
+      } else {
+        toast.success("Break ended");
+      }
+    }
   };
 
   return (
@@ -91,13 +93,15 @@ function Dashboard() {
             <p className="text-2xl font-mono text-gray-800">{currentTime}</p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg mb-3">
-            <p className="text-sm text-gray-500 mb-1">
-              {isOnBreak ? "Break Time" : "Work Time"}
-            </p>
-            <p className="text-2xl font-mono text-gray-800">
-              {isOnBreak ? breakTime : workTime}
-            </p>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500 mb-1">Work Time</p>
+              <p className="text-2xl font-mono text-gray-800">{workTime}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500 mb-1">Break Time</p>
+              <p className="text-2xl font-mono text-gray-800">{breakTime}</p>
+            </div>
           </div>
 
           <div className="flex space-x-3">
