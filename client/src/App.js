@@ -12,8 +12,6 @@ import { ThemeProvider } from "./helper/ThemeProvider";
 
 const App = () => {
   const { auth } = useSelector((state) => state);
-  console.log("auth",auth);
-  
 
   return (
     <ThemeProvider>

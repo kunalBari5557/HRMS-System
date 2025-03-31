@@ -6,7 +6,8 @@ import {
   fetchStatus,
   toggleBreak,
   updateCurrentTime,
-  resetError
+  resetError,
+  fetchAttendanceList,
 } from "../../../Redux/features/attendance/attendanceSlice";
 
 function Dashboard() {
@@ -20,7 +21,14 @@ function Dashboard() {
     status,
     error,
     hasClockedInToday,
+    attendanceList,
   } = useSelector((state) => state.attendance);
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const todayRecord = attendanceList.find((item) => item.date === today);
+
+  console.log("isClockedIn", isClockedIn);
+  console.log("isOnBreak", isOnBreak);
+  console.log("todayRecord", todayRecord); // This will return only today's attendance record or undefined if not found.
 
   // Fetch initial status and set up timer
   useEffect(() => {
@@ -32,6 +40,10 @@ function Dashboard() {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAttendanceList());
   }, [dispatch]);
 
   // Show error toast when error occurs
@@ -96,11 +108,19 @@ function Dashboard() {
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-500 mb-1">Work Time</p>
-              <p className="text-2xl font-mono text-gray-800">{workTime}</p>
+              <p className="text-2xl font-mono text-gray-800">
+                {isClockedIn
+                  ? workTime ?? "00:00:00"
+                  : todayRecord?.totalHours ?? "00:00:00"}
+              </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-500 mb-1">Break Time</p>
-              <p className="text-2xl font-mono text-gray-800">{breakTime}</p>
+              <p className="text-2xl font-mono text-gray-800">
+                {isOnBreak
+                  ? breakTime ?? "00:00:00"
+                  : todayRecord?.breakHours ?? "00:00:00"}
+              </p>
             </div>
           </div>
 
@@ -126,7 +146,9 @@ function Dashboard() {
             </button>
             <button
               onClick={handleClockInOut}
-              disabled={status === "loading" || (hasClockedInToday && !isClockedIn)}
+              disabled={
+                status === "loading" || (hasClockedInToday && !isClockedIn)
+              }
               className={`flex-1 py-2 px-4 rounded-lg transition ${
                 isClockedIn
                   ? "bg-red-600 hover:bg-red-700 text-white"

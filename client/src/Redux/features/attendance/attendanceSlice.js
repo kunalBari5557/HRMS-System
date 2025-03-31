@@ -1,11 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../../utils/api";
 
-// Helper functions
-const timeStringToSeconds = (timeStr) => {
-  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
-  return hours * 3600 + minutes * 60 + seconds;
-};
 
 const secondsToTimeString = (totalSeconds) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -41,6 +36,7 @@ const loadInitialState = () => {
     clockInTime: localStorage.getItem("clockInTime") || null,
     breakStartTime: localStorage.getItem("breakStartTime") || null,
     totalBreakDuration: parseInt(localStorage.getItem("totalBreakDuration")) || 0,
+    attendanceList: JSON.parse(localStorage.getItem("attendanceList")) || [],
   };
 };
 
@@ -72,6 +68,19 @@ export const toggleBreak = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// ✅ New AsyncThunk: Fetch Attendance List
+export const fetchAttendanceList = createAsyncThunk(
+  "attendance/fetchAttendanceList",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/attendance/list");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch attendance list");
     }
   }
 );
@@ -225,6 +234,20 @@ const attendanceSlice = createSlice({
       .addCase(toggleBreak.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload?.error || action.error.message;
+      })
+      .addCase(fetchAttendanceList.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAttendanceList.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.attendanceList = action.payload;
+
+        // Save in localStorage
+        localStorage.setItem("attendanceList", JSON.stringify(action.payload));
+      })
+      .addCase(fetchAttendanceList.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
