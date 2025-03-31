@@ -70,6 +70,13 @@ const Sidebar = () => {
             hoverClass={linkHoverClass}
           />
           <SidebarLink
+            to="/my-attendance"
+            icon={<Grid size={isCollapsed ? 22 : 20} />}
+            text="My Attendance"
+            isCollapsed={isCollapsed}
+            hoverClass={linkHoverClass}
+          />
+          <SidebarLink
             to="/profile"
             icon={<FileText size={isCollapsed ? 22 : 20} />}
             text="Profile"
