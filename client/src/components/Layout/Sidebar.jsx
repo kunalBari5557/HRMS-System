@@ -15,9 +15,7 @@ const Sidebar = () => {
     theme.primaryColor
   }-800 text-white transition-all duration-300 ease-in-out z-40 shadow-lg ${
     isOpen ? "translate-x-0" : "-translate-x-full"
-  } md:translate-x-0 md:relative ${
-    isCollapsed ? "w-20" : "w-64"
-  }`;
+  } md:translate-x-0 md:relative ${isCollapsed ? "w-20" : "w-64"}`;
 
   const linkHoverClass = `hover:bg-${theme.primaryColor}-600`;
 
@@ -35,9 +33,17 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div className={sidebarClasses}>
         {/* Logo and Collapse Button Container */}
-        <div className={`flex ${isCollapsed ? "flex-col" : "flex-row"} items-center justify-between p-4 h-16`}>
+        <div
+          className={`flex ${
+            isCollapsed ? "flex-col" : "flex-row"
+          } items-center justify-between p-4 h-16`}
+        >
           {/* Logo - Center when collapsed */}
-          <div className={`flex items-center ${isCollapsed ? "justify-center w-full" : ""}`}>
+          <div
+            className={`flex items-center ${
+              isCollapsed ? "justify-center w-full" : ""
+            }`}
+          >
             <img
               src={logo}
               alt="Logo"
@@ -124,9 +130,7 @@ const SidebarLink = ({ to, icon, text, isCollapsed, hoverClass }) => (
     title={isCollapsed ? text : ""} // Show tooltip when collapsed
   >
     <span className="flex-shrink-0">{icon}</span>
-    {!isCollapsed && (
-      <span className="text-sm font-medium">{text}</span>
-    )}
+    {!isCollapsed && <span className="text-sm font-medium">{text}</span>}
   </Link>
 );
 

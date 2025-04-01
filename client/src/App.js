@@ -18,13 +18,17 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route 
-            path="/" 
-            element={auth.token ? <Navigate to="/dashboard" replace /> : <Login />} 
+          <Route
+            path="/"
+            element={
+              auth.token ? <Navigate to="/dashboard" replace /> : <Login />
+            }
           />
-          <Route 
-            path="/signup" 
-            element={auth.token ? <Navigate to="/dashboard" replace /> : <Signup />} 
+          <Route
+            path="/signup"
+            element={
+              auth.token ? <Navigate to="/dashboard" replace /> : <Signup />
+            }
           />
 
           {/* Protected Routes with Layout wrapping all authenticated pages */}
@@ -46,4 +50,3 @@ const App = () => {
 };
 
 export default App;
-

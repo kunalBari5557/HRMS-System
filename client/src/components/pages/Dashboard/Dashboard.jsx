@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 const MyLogs = lazy(() => import("./MyLogs"));
 const AttendanceChart = lazy(() => import("./AttendanceChart"));
 
-
 function Dashboard() {
   return (
     <Suspense fallback={<div>Loading...</div>}>

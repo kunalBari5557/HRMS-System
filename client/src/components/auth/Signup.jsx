@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { register } from '../../Redux/features/auth/authSlice';
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { register } from "../../Redux/features/auth/authSlice";
 
 const Signup = () => {
   const [form, setForm] = useState({
-    email: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
   });
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
@@ -24,7 +24,10 @@ const Signup = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <form className="bg-white p-6 shadow-lg rounded-lg" onSubmit={handleSubmit}>
+      <form
+        className="bg-white p-6 shadow-lg rounded-lg"
+        onSubmit={handleSubmit}
+      >
         <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
 
         <input
@@ -65,12 +68,12 @@ const Signup = () => {
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
           disabled={loading}
         >
-          {loading ? 'Signing up...' : 'Sign Up'}
+          {loading ? "Signing up..." : "Sign Up"}
         </button>
 
         {/* Already have an account? */}
         <p className="text-center mt-4 text-gray-500">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link to="/" className="text-blue-500 hover:underline">
             Login
           </Link>

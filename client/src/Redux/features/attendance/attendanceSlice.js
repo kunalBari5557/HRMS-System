@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../../utils/api";
 
-
 const secondsToTimeString = (totalSeconds) => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -31,11 +30,13 @@ const loadInitialState = () => {
     workTime: localStorage.getItem("workTime") || "00:00:00",
     status: "idle",
     error: null,
-    hasClockedInToday: localStorage.getItem("hasClockedInToday") === "true" || false,
+    hasClockedInToday:
+      localStorage.getItem("hasClockedInToday") === "true" || false,
     breakCount: parseInt(localStorage.getItem("breakCount")) || 0,
     clockInTime: localStorage.getItem("clockInTime") || null,
     breakStartTime: localStorage.getItem("breakStartTime") || null,
-    totalBreakDuration: parseInt(localStorage.getItem("totalBreakDuration")) || 0,
+    totalBreakDuration:
+      parseInt(localStorage.getItem("totalBreakDuration")) || 0,
     attendanceList: JSON.parse(localStorage.getItem("attendanceList")) || [],
   };
 };
@@ -80,7 +81,9 @@ export const fetchAttendanceList = createAsyncThunk(
       const response = await api.get("/attendance/list");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch attendance list");
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch attendance list"
+      );
     }
   }
 );
@@ -103,7 +106,8 @@ const attendanceSlice = createSlice({
         } else if (state.clockInTime) {
           // Calculate work time correctly
           const clockInTime = new Date(state.clockInTime);
-          const workDuration = Math.floor((now - clockInTime) / 1000) - state.totalBreakDuration;
+          const workDuration =
+            Math.floor((now - clockInTime) / 1000) - state.totalBreakDuration;
           state.workTime = secondsToTimeString(workDuration);
           localStorage.setItem("workTime", state.workTime);
         }
@@ -111,6 +115,37 @@ const attendanceSlice = createSlice({
     },
     resetError: (state) => {
       state.error = null;
+    },
+    resetAttendance: (state) => {
+      // Clear localStorage related to attendance
+      localStorage.removeItem("isClockedIn");
+      localStorage.removeItem("isOnBreak");
+      localStorage.removeItem("breakTime");
+      localStorage.removeItem("workTime");
+      localStorage.removeItem("hasClockedInToday");
+      localStorage.removeItem("breakCount");
+      localStorage.removeItem("clockInTime");
+      localStorage.removeItem("breakStartTime");
+      localStorage.removeItem("totalBreakDuration");
+      localStorage.removeItem("attendanceList");
+
+      // Reset Redux state
+      return {
+        ...state,
+        isClockedIn: false,
+        isOnBreak: false,
+        currentTime: "00:00:00",
+        breakTime: "00:00:00",
+        workTime: "00:00:00",
+        status: "idle",
+        error: null,
+        hasClockedInToday: false,
+        breakCount: 0,
+        clockInTime: null,
+        breakStartTime: null,
+        totalBreakDuration: 0,
+        attendanceList: [],
+      };
     },
   },
   extraReducers: (builder) => {
@@ -126,13 +161,22 @@ const attendanceSlice = createSlice({
           state.isOnBreak = action.payload.isOnBreak;
           state.hasClockedInToday = action.payload.hasClockedInToday || false;
           state.breakCount = action.payload.breakCount || 0;
-          state.workTime = action.payload.workTime || localStorage.getItem("workTime") || "00:00:00";
-          state.breakTime = action.payload.breakTime || localStorage.getItem("breakTime") || "00:00:00";
+          state.workTime =
+            action.payload.workTime ||
+            localStorage.getItem("workTime") ||
+            "00:00:00";
+          state.breakTime =
+            action.payload.breakTime ||
+            localStorage.getItem("breakTime") ||
+            "00:00:00";
           state.clockInTime = action.payload.clockInTime || null;
           state.breakStartTime = action.payload.breakStartTime || null;
-          state.totalBreakDuration = action.payload.totalBreakDuration || parseInt(localStorage.getItem("totalBreakDuration")) || 0;
+          state.totalBreakDuration =
+            action.payload.totalBreakDuration ||
+            parseInt(localStorage.getItem("totalBreakDuration")) ||
+            0;
         }
-        
+
         // Always persist the current state
         localStorage.setItem("isClockedIn", state.isClockedIn);
         localStorage.setItem("isOnBreak", state.isOnBreak);
@@ -161,7 +205,7 @@ const attendanceSlice = createSlice({
           state.breakCount = 0;
           state.totalBreakDuration = 0;
           state.breakStartTime = null;
-          
+
           localStorage.setItem("clockInTime", now);
           localStorage.setItem("workTime", "00:00:00");
           localStorage.setItem("breakTime", "00:00:00");
@@ -183,7 +227,8 @@ const attendanceSlice = createSlice({
         localStorage.setItem("breakCount", state.breakCount);
 
         // ✅ Dispatch fetchAttendanceList to update attendance state after clock-in/out
-        state.attendanceList = action.payload.attendanceList || state.attendanceList;
+        state.attendanceList =
+          action.payload.attendanceList || state.attendanceList;
       })
       .addCase(clockInOut.rejected, (state, action) => {
         state.status = "failed";
@@ -207,7 +252,10 @@ const attendanceSlice = createSlice({
             const breakStart = new Date(state.breakStartTime);
             const breakDuration = Math.floor((now - breakStart) / 1000);
             state.totalBreakDuration += breakDuration;
-            localStorage.setItem("totalBreakDuration", state.totalBreakDuration);
+            localStorage.setItem(
+              "totalBreakDuration",
+              state.totalBreakDuration
+            );
             state.breakTime = secondsToTimeString(state.totalBreakDuration);
             localStorage.setItem("breakTime", state.breakTime);
           }
@@ -225,7 +273,8 @@ const attendanceSlice = createSlice({
         state.error = null;
 
         // ✅ Dispatch fetchAttendanceList to update attendance state after break in/out
-        state.attendanceList = action.payload.attendanceList || state.attendanceList;
+        state.attendanceList =
+          action.payload.attendanceList || state.attendanceList;
       })
       .addCase(toggleBreak.rejected, (state, action) => {
         state.status = "failed";
@@ -248,5 +297,6 @@ const attendanceSlice = createSlice({
   },
 });
 
-export const { updateCurrentTime, resetError } = attendanceSlice.actions;
+export const { updateCurrentTime, resetError, resetAttendance } =
+  attendanceSlice.actions;
 export default attendanceSlice.reducer;
