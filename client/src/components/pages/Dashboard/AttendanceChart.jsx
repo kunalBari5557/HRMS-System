@@ -39,7 +39,7 @@ const AttendanceChart = () => {
     const totalMinutes = getMinutes(entry.totalHours);
     const breakMinutes = getMinutes(entry.breakHours);
     const presentMinutes = totalMinutes - breakMinutes;
-    const absentMinutes = totalMinutes === 0 ? 10 : 0; // If no work, show "Absent"
+    const absentMinutes = totalMinutes === 0 ? 0 : 0; // If no work, show "Absent"
 
     return {
       date: entry.date.split("-").slice(1).join("/"), // Format: MM/DD
